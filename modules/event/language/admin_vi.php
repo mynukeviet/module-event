@@ -32,6 +32,7 @@ $lang_module['active'] = 'Hoạt động';
 $lang_module['search_title'] = 'Nhập từ khóa tìm kiếm';
 $lang_module['search_submit'] = 'Tìm kiếm';
 $lang_module['title'] = 'Tiêu đề';
+$lang_module['alias'] = 'Liên kết tĩnh';
 $lang_module['main_cat'] = 'Chủ đề chính';
 $lang_module['main_include'] = 'Thuộc';
 $lang_module['error_required_title'] = 'Lỗi: bạn cần nhập dữ liệu cho Tiêu đề';

@@ -5,7 +5,7 @@
  * @Author VINADES.,JSC (contact@vinades.vn)
  * @Copyright (C) 2015 VINADES.,JSC. All rights reserved
  * @License GNU/GPL version 2 or any later version
- * @Createdate Sun, 21 Jun 2015 01:09:43 GMT
+ * @Createdate Sun, 21 Jun 2015 10:16:43 GMT
  */
 
 if ( ! defined( 'NV_MAINFILE' ) ) die( 'Stop!!!' );
@@ -18,6 +18,7 @@ $sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_
   id smallint(4) unsigned NOT NULL AUTO_INCREMENT,
   parentid smallint(4) unsigned NOT NULL DEFAULT '0',
   title varchar(255) NOT NULL COMMENT 'Tên gọi chủ đề',
+  alias varchar(255) NOT NULL,
   note tinytext NOT NULL COMMENT 'Ghi chú',
   lev smallint(4) unsigned NOT NULL DEFAULT '0',
   numsub smallint(4) unsigned NOT NULL DEFAULT '0',

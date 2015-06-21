@@ -66,6 +66,15 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label class="col-sm-3 control-label"><strong>{LANG.alias}</strong></label>
+				<div class="col-sm-20">
+					<input class="form-control" type="text" name="alias" value="{ROW.alias}" id="id_alias" />
+				</div>
+				<div class="col-sm-1">
+					<i class="fa fa-refresh fa-lg icon-pointer" onclick="nv_get_alias('id_alias');">&nbsp;</i>
+				</div>
+			</div>
+			<div class="form-group">
 				<label class="col-sm-3 control-label"><strong>{LANG.main_include}</strong> </label>
 				<div class="col-sm-21">
 					<select class="form-control" name="parentid">
@@ -121,6 +130,27 @@
 		return;
 	}
 
+	function nv_get_alias(id) {
+		var title = strip_tags($("[name='title']").val());
+		if (title != '') {
+			$.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=cat&nocache=' + new Date().getTime(), 'get_alias_title=' + encodeURIComponent(title), function(res) {
+				$("#" + id).val(strip_tags(res));
+			});
+		}
+		return false;
+	}
+
 	//]]>
 </script>
+
+<!-- BEGIN: auto_get_alias -->
+<script type="text/javascript">
+	//<![CDATA[
+	$("[name='title']").change(function() {
+		nv_get_alias('id_alias');
+	});
+	//]]>
+</script>
+<!-- END: auto_get_alias -->
+
 <!-- END: main -->

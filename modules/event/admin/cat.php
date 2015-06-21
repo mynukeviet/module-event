@@ -10,6 +10,13 @@
 
 if ( ! defined( 'NV_IS_FILE_ADMIN' ) ) die( 'Stop!!!' );
 
+if ( $nv_Request->isset_request( 'get_alias_title', 'post' ) )
+{
+	$alias = $nv_Request->get_title( 'get_alias_title', 'post', '' );
+	$alias = change_alias( $alias );
+	die( $alias );
+}
+
 //change status
 if( $nv_Request->isset_request( 'change_status', 'post, get' ) )
 {
@@ -105,7 +112,22 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 	$row['parentid'] = $nv_Request->get_int( 'parentid', 'post', 0 );
 	$data['parentid_old'] = $nv_Request->get_int( 'parentid_old', 'post', 0 );
 	$row['title'] = $nv_Request->get_title( 'title', 'post', '' );
+	$row['alias'] = $nv_Request->get_title( 'alias', 'post', '' );
 	$row['note'] = $nv_Request->get_string( 'note', 'post', '' );
+
+	if( !empty( $row['alias'] ) )
+	{
+		$stmt = $db->prepare( 'SELECT COUNT(*) FROM ' . NV_PREFIXLANG . '_' . $module_data . '_cat WHERE id !=' . $row['id'] . ' AND alias = :alias' );
+		$stmt->bindParam( ':alias', $row['alias'], PDO::PARAM_STR );
+		$stmt->execute();
+
+		if( $stmt->fetchColumn() )
+		{
+			$weight = $db->query( 'SELECT MAX(id) FROM ' . NV_PREFIXLANG . '_' . $module_data . '_cat' )->fetchColumn();
+			$weight = intval( $weight ) + 1;
+			$row['alias'] = $row['alias'] . '-' . $weight;
+		}
+	}
 
 	if( empty( $row['title'] ) )
 	{
@@ -118,7 +140,7 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 		{
 			if( empty( $row['id'] ) )
 			{
-				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . '_cat (parentid, title, note, weight, status) VALUES (:parentid, :title, :note, :weight, :status)' );
+				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . '_cat (parentid, title, alias, note, weight, status) VALUES (:parentid, :title, :alias, :note, :weight, :status)' );
 
 				$weight = $db->query( 'SELECT max(weight) FROM ' . NV_PREFIXLANG . '_' . $module_data . '_cat' )->fetchColumn();
 				$weight = intval( $weight ) + 1;
@@ -130,10 +152,11 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 			}
 			else
 			{
-				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_cat SET parentid=:parentid, title = :title, note = :note WHERE id=' . $row['id'] );
+				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_cat SET parentid=:parentid, title = :title, alias = :alias, note = :note WHERE id=' . $row['id'] );
 			}
 			$stmt->bindParam( ':parentid', $row['parentid'], PDO::PARAM_INT );
 			$stmt->bindParam( ':title', $row['title'], PDO::PARAM_STR );
+			$stmt->bindParam( ':alias', $row['alias'], PDO::PARAM_STR );
 			$stmt->bindParam( ':note', $row['note'], PDO::PARAM_STR, strlen($row['note']) );
 
 			$exc = $stmt->execute();
@@ -272,6 +295,11 @@ foreach( $array_cat_list as $rows_i )
 	$xtpl->assign( 'ptitle', $rows_i[1] );
 	$xtpl->assign( 'pselect', $sl );
 	$xtpl->parse( 'main.parent_loop' );
+}
+
+if( empty( $row['id'] ) )
+{
+	$xtpl->parse( 'main.auto_get_alias' );
 }
 
 if( ! empty( $error ) )

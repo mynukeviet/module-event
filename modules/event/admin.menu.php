@@ -10,6 +10,8 @@
 
 if ( ! defined( 'NV_ADMIN' ) ) die( 'Stop!!!' );
 
-$submenu['config'] = $lang_module['config'];
-$submenu['cat'] = $lang_module['cat'];
+$allow_func = array( 'main', 'config', 'cat', 'content');
+
 $submenu['content'] = $lang_module['content'];
+$submenu['cat'] = $lang_module['cat'];
+$submenu['config'] = $lang_module['config'];

@@ -5,15 +5,35 @@
  * @Author VINADES.,JSC (contact@vinades.vn)
  * @Copyright (C) 2015 VINADES.,JSC. All rights reserved
  * @License GNU/GPL version 2 or any later version
- * @Createdate Sun, 21 Jun 2015 10:16:43 GMT
+ * @Createdate Sun, 21 Jun 2015 10:32:42 GMT
  */
 
 if ( ! defined( 'NV_MAINFILE' ) ) die( 'Stop!!!' );
 
 $sql_drop_module = array();
+$sql_drop_module[] = "DROP TABLE IF EXISTS " . $db_config['prefix'] . "_" . $module_data . "";
 $sql_drop_module[] = "DROP TABLE IF EXISTS " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat";
 
 $sql_create_module = $sql_drop_module;
+$sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "(
+  id int(11) unsigned NOT NULL AUTO_INCREMENT,
+  title varchar(255) NOT NULL,
+  alias varchar(255) NOT NULL,
+  catid smallint(4) unsigned NOT NULL,
+  adduser int(11) unsigned NOT NULL DEFAULT '0',
+  address varchar(255) NOT NULL COMMENT 'Địa chỉ diễn ra sự kiện',
+  quantity int(11) unsigned NOT NULL COMMENT 'Giới hạn sSố lượng tham gia',
+  image varchar(255) NOT NULL COMMENT 'Hình ảnh sự kiện',
+  hometext text NOT NULL COMMENT 'Giới thiệu ngắn gọn',
+  bodytext text NOT NULL COMMENT 'Chi tiết sự kiện',
+  start_time int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Thời gian bắt đầu',
+  end_time int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Thời gian kết thúc',
+  add_time int(11) unsigned NOT NULL DEFAULT '0',
+  edit_time int(11) unsigned NOT NULL DEFAULT '0',
+  status tinyint(1) unsigned NOT NULL DEFAULT '1',
+  PRIMARY KEY (id)
+) ENGINE=MyISAM";
+
 $sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat(
   id smallint(4) unsigned NOT NULL AUTO_INCREMENT,
   parentid smallint(4) unsigned NOT NULL DEFAULT '0',

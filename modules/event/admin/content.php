@@ -304,6 +304,7 @@ if( ! empty( $error ) )
 	$xtpl->assign( 'ERROR', implode( '<br />', $error ) );
 	$xtpl->parse( 'main.error' );
 }
+
 if( empty( $row['id'] ) )
 {
 	$xtpl->parse( 'main.auto_get_alias' );

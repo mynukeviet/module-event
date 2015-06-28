@@ -22,20 +22,28 @@ if( empty( $array_data ) )
 	die();
 }
 
-if( ! empty( $array_data['homeimgfile'] ) and file_exists( NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $array_data['homeimgfile'] ) )
+if( nv_user_in_groups( $global_array_event_cat[$catid]['groups_view'] ) and nv_user_in_groups( $array_data['groups_view'] ) )
 {
-	$array_data['homeimgfile'] = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $array_data['homeimgfile'];
+	if( ! empty( $array_data['homeimgfile'] ) and file_exists( NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $array_data['homeimgfile'] ) )
+	{
+		$array_data['homeimgfile'] = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $array_data['homeimgfile'];
+	}
+	else
+	{
+		$array_data['homeimgfile'] = NV_BASE_SITEURL . 'themes/' . $global_config['site_theme'] . '/images/no_image.gif';
+	}
+
+	$contents = nv_theme_event_detail( $array_data );
+
+	if( !empty( $array_data['keywords'] ) )
+	{
+		$key_words = $array_data['keywords'];
+	}
 }
 else
 {
-	$array_data['homeimgfile'] = NV_BASE_SITEURL . 'themes/' . $global_config['site_theme'] . '/images/no_image.gif';
-}
-
-$contents = nv_theme_event_detail( $array_data );
-
-if( !empty( $array_data['keywords'] ) )
-{
-	$key_words = $array_data['keywords'];
+	$nv_redirect = nv_url_rewrite( NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name, true );
+	redict_link( $lang_module['detail_no_permission'], $lang_module['redirect_to_back'], $nv_redirect );
 }
 
 include NV_ROOTDIR . '/includes/header.php';

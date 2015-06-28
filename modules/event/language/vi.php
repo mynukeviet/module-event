@@ -26,3 +26,5 @@ $lang_module['status'] = 'Trạng thái';
 $lang_module['status_0'] = 'Đã kết thúc';
 $lang_module['status_1'] = 'Sắp diễn ra';
 $lang_module['status_2'] = 'Đang diễn ra';
+$lang_module['detail_no_permission'] = 'Chú ý: Bạn không được quyền xem chi tiết sự kiện này';
+$lang_module['redirect_to_back'] = 'Quay lại trang chủ';

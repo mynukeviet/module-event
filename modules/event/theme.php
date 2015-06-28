@@ -123,3 +123,25 @@ function nv_theme_event_detail ( $array_data )
     $xtpl->parse( 'main' );
     return $xtpl->text( 'main' );
 }
+
+/**
+ * redict_link()
+ *
+ * @param mixed $lang_view
+ * @param mixed $lang_back
+ * @param mixed $nv_redirect
+ * @return
+ */
+function redict_link( $lang_view, $lang_back, $nv_redirect )
+{
+	$contents = "<div class=\"text-center\">";
+	$contents .= '<strong>' . $lang_view . "</strong><br /><br />\n";
+	$contents .= "<img border=\"0\" src=\"" . NV_BASE_SITEURL . "images/load_bar.gif\"><br /><br />\n";
+	$contents .= "<a href=\"" . $nv_redirect . "\">" . $lang_back . "</a>";
+	$contents .= "</div>";
+	$contents .= "<meta http-equiv=\"refresh\" content=\"2;url=" . $nv_redirect . "\" />";
+	include NV_ROOTDIR . '/includes/header.php';
+	echo nv_site_theme( $contents );
+	include NV_ROOTDIR . '/includes/footer.php';
+	exit();
+}

@@ -31,6 +31,8 @@ $db->select( '*' )
 $_query = $db->query( $db->sql() );
 while( $row = $_query->fetch() )
 {
+	if( !nv_user_in_groups( $global_array_event_cat[$row['catid']]['groups_view'] ) or !nv_user_in_groups( $row['groups_view'] ) ) continue;
+
 	$image = NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $row['homeimgfile'];
 	if( $row['homeimgfile'] != '' and file_exists( $image ) )
 	{

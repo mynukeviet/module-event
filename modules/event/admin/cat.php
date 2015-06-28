@@ -103,6 +103,7 @@ if ( $nv_Request->isset_request( 'delete_id', 'get' ) and $nv_Request->isset_req
 	}
 }
 
+$groups_list = nv_groups_list();
 $row = array();
 $error = array();
 $row['id'] = $nv_Request->get_int( 'id', 'post,get', 0 );
@@ -113,7 +114,12 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 	$data['parentid_old'] = $nv_Request->get_int( 'parentid_old', 'post', 0 );
 	$row['title'] = $nv_Request->get_title( 'title', 'post', '' );
 	$row['alias'] = $nv_Request->get_title( 'alias', 'post', '' );
-	$row['note'] = $nv_Request->get_string( 'note', 'post', '' );
+	$row['keywords'] = $nv_Request->get_title( 'keywords', 'post', '', 1 );
+	$row['description'] = $nv_Request->get_string( 'description', 'post', '' );
+	$row['description'] = nv_nl2br( nv_htmlspecialchars( strip_tags( $row['description'] ) ), '<br />' );
+	$row['descriptionhtml'] = $nv_Request->get_editor( 'descriptionhtml', '', NV_ALLOWED_HTML_TAGS );
+	$_groups_view = $nv_Request->get_array( 'groups_view', 'post', array() );
+	$row['groups_view'] = !empty( $_groups_view ) ? implode( ',', nv_groups_post( array_intersect( $_groups_view, array_keys( $groups_list ) ) ) ) : '';
 
 	if( !empty( $row['alias'] ) )
 	{
@@ -140,7 +146,7 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 		{
 			if( empty( $row['id'] ) )
 			{
-				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . '_cat (parentid, title, alias, note, weight, status) VALUES (:parentid, :title, :alias, :note, :weight, :status)' );
+				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . '_cat (parentid, title, alias, keywords, description, descriptionhtml, weight, status) VALUES (:parentid, :title, :alias, :keywords, :description, :descriptionhtml, :weight, :status)' );
 
 				$weight = $db->query( 'SELECT max(weight) FROM ' . NV_PREFIXLANG . '_' . $module_data . '_cat' )->fetchColumn();
 				$weight = intval( $weight ) + 1;
@@ -152,12 +158,14 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 			}
 			else
 			{
-				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_cat SET parentid=:parentid, title = :title, alias = :alias, note = :note WHERE id=' . $row['id'] );
+				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_cat SET parentid=:parentid, title = :title, alias = :alias, keywords = :keywords, description = :description, descriptionhtml = :descriptionhtml WHERE id=' . $row['id'] );
 			}
 			$stmt->bindParam( ':parentid', $row['parentid'], PDO::PARAM_INT );
 			$stmt->bindParam( ':title', $row['title'], PDO::PARAM_STR );
 			$stmt->bindParam( ':alias', $row['alias'], PDO::PARAM_STR );
-			$stmt->bindParam( ':note', $row['note'], PDO::PARAM_STR, strlen($row['note']) );
+			$stmt->bindParam( ':keywords', $row['keywords'], PDO::PARAM_STR );
+			$stmt->bindParam( ':description', $row['description'], PDO::PARAM_STR, strlen( $row['description'] ) );
+			$stmt->bindParam( ':descriptionhtml', $row['descriptionhtml'], PDO::PARAM_STR, strlen( $row['descriptionhtml'] ) );
 
 			$exc = $stmt->execute();
 			if( $exc )
@@ -191,7 +199,10 @@ else
 {
 	$row['id'] = 0;
 	$row['title'] = '';
-	$row['note'] = '';
+	$row['alias'] = '';
+	$row['keywords'] = '';
+	$row['description'] = '';
+	$row['descriptionhtml'] = '';
 }
 
 // Fetch Limit
@@ -287,6 +298,22 @@ if( $show_view )
 	}
 	$xtpl->parse( 'main.view' );
 }
+
+if( defined( 'NV_EDITOR' ) )
+{
+	require_once NV_ROOTDIR . '/' . NV_EDITORSDIR . '/' . NV_EDITOR . '/nv.php';
+}
+$row['descriptionhtml'] = nv_htmlspecialchars( nv_editor_br2nl( $row['descriptionhtml'] ) );
+if( defined( 'NV_EDITOR' ) and nv_function_exists( 'nv_aleditor' ) )
+{
+	$_uploads_dir = NV_UPLOADS_DIR . '/' . $module_upload;
+	$descriptionhtml = nv_aleditor( 'descriptionhtml', '100%', '200px', $row['descriptionhtml'], 'Basic', $_uploads_dir, $_uploads_dir );
+}
+else
+{
+	$descriptionhtml = "<textarea style=\"width: 100%\" name=\"descriptionhtml\" id=\"descriptionhtml\" cols=\"20\" rows=\"15\">" . $descriptionhtml . "</textarea>";
+}
+$xtpl->assign( 'DESCRIPTIONHTML', $descriptionhtml );
 
 foreach( $array_cat_list as $rows_i )
 {

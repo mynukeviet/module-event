@@ -85,9 +85,21 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label"><strong>{LANG.note}</strong></label>
+				<label class="col-sm-3 control-label"><strong>{LANG.keywords}</strong></label>
 				<div class="col-sm-21">
-					<textarea class="form-control" style="height:100px;" cols="75" rows="5" name="note">{ROW.note}</textarea>
+					<input class="form-control" type="text" name="keywords" value="{ROW.keywords}" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"><strong>{LANG.description}</strong></label>
+				<div class="col-sm-21">
+					<textarea class="form-control" style="height:100px;" cols="75" rows="5" name="description">{ROW.description}</textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"><strong>{LANG.descriptionhtml}</strong></label>
+				<div class="col-sm-21">
+					{DESCRIPTIONHTML}
 				</div>
 			</div>
 			<div class="form-group" style="text-align: center"><input class="btn btn-primary" name="submit" type="submit" value="{LANG.save}" />

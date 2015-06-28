@@ -19,6 +19,9 @@ $lang_translator['langtype'] = 'lang_module';
 $lang_module['config'] = 'Cấu hình';
 $lang_module['save'] = 'Lưu lại';
 $lang_module['note'] = 'Ghi chú';
+$lang_module['keywords'] = 'Từ khóa';
+$lang_module['description'] = 'Mô tả';
+$lang_module['descriptionhtml'] = 'Giới thiệu chi tiết';
 
 $lang_module['event'] = 'Sự kiện';
 $lang_module['event_list'] = 'Danh sách sự kiện';

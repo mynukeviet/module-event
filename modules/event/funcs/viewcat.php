@@ -10,7 +10,6 @@
 
 if ( ! defined( 'NV_IS_MOD_EVENT' ) ) die( 'Stop!!!' );
 
-$page_title = $module_info['custom_title'];
 $key_words = $module_info['keywords'];
 
 $contents = '';
@@ -28,6 +27,7 @@ if( nv_user_in_groups( $global_array_event_cat[$catid]['groups_view'] ) )
 {
 	if( empty( $contents ) )
 	{
+		$page_title = $global_array_event_cat[$catid]['title'];
 		if( !empty( $global_array_event_cat[$catid]['keywords'] ) )
 		{
 			$key_words = $global_array_event_cat[$catid]['keywords'];

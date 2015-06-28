@@ -10,7 +10,6 @@
 
 if ( ! defined( 'NV_IS_MOD_EVENT' ) ) die( 'Stop!!!' );
 
-$page_title = $module_info['custom_title'];
 $key_words = $module_info['keywords'];
 
 $array_data = array();
@@ -33,12 +32,18 @@ if( nv_user_in_groups( $global_array_event_cat[$catid]['groups_view'] ) and nv_u
 		$array_data['homeimgfile'] = NV_BASE_SITEURL . 'themes/' . $global_config['site_theme'] . '/images/no_image.gif';
 	}
 
+	//metatag image facebook
+	$meta_property['og:image'] = NV_MY_DOMAIN . $array_data['homeimgfile'];
+
 	$contents = nv_theme_event_detail( $array_data );
 
+	$page_title = $array_data['title'];
 	if( !empty( $array_data['keywords'] ) )
 	{
 		$key_words = $array_data['keywords'];
 	}
+
+
 }
 else
 {

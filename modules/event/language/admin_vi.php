@@ -22,6 +22,7 @@ $lang_module['note'] = 'Ghi chú';
 $lang_module['keywords'] = 'Từ khóa';
 $lang_module['description'] = 'Mô tả';
 $lang_module['descriptionhtml'] = 'Giới thiệu chi tiết';
+$lang_module['groups_view'] = 'Nhóm được xem';
 
 $lang_module['event'] = 'Sự kiện';
 $lang_module['event_list'] = 'Danh sách sự kiện';

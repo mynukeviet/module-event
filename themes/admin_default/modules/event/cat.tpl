@@ -102,6 +102,14 @@
 					{DESCRIPTIONHTML}
 				</div>
 			</div>
+			<div class="form-group">
+				<label class="col-sm-3 text-right"><strong>{LANG.groups_view}</strong></label>
+				<div class="col-sm-21">
+					<!-- BEGIN: groups_view -->
+						<label><input name="groups_view[]" type="checkbox" value="{GROUPS_VIEW.value}" {GROUPS_VIEW.checked} />{GROUPS_VIEW.title}</label>&nbsp;&nbsp;&nbsp;
+					<!-- END: groups_view -->
+				</div>
+			</div>
 			<div class="form-group" style="text-align: center"><input class="btn btn-primary" name="submit" type="submit" value="{LANG.save}" />
 			</div>
 		</form>

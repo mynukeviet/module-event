@@ -146,7 +146,7 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 		{
 			if( empty( $row['id'] ) )
 			{
-				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . '_cat (parentid, title, alias, keywords, description, descriptionhtml, weight, status) VALUES (:parentid, :title, :alias, :keywords, :description, :descriptionhtml, :weight, :status)' );
+				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . '_cat (parentid, title, alias, keywords, description, descriptionhtml, groups_view, weight, status) VALUES (:parentid, :title, :alias, :keywords, :description, :descriptionhtml, :groups_view, :weight, :status)' );
 
 				$weight = $db->query( 'SELECT max(weight) FROM ' . NV_PREFIXLANG . '_' . $module_data . '_cat' )->fetchColumn();
 				$weight = intval( $weight ) + 1;
@@ -158,7 +158,7 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 			}
 			else
 			{
-				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_cat SET parentid=:parentid, title = :title, alias = :alias, keywords = :keywords, description = :description, descriptionhtml = :descriptionhtml WHERE id=' . $row['id'] );
+				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_cat SET parentid=:parentid, title = :title, alias = :alias, keywords = :keywords, description = :description, descriptionhtml = :descriptionhtml, groups_view = :groups_view WHERE id=' . $row['id'] );
 			}
 			$stmt->bindParam( ':parentid', $row['parentid'], PDO::PARAM_INT );
 			$stmt->bindParam( ':title', $row['title'], PDO::PARAM_STR );
@@ -166,6 +166,7 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 			$stmt->bindParam( ':keywords', $row['keywords'], PDO::PARAM_STR );
 			$stmt->bindParam( ':description', $row['description'], PDO::PARAM_STR, strlen( $row['description'] ) );
 			$stmt->bindParam( ':descriptionhtml', $row['descriptionhtml'], PDO::PARAM_STR, strlen( $row['descriptionhtml'] ) );
+			$stmt->bindParam( ':groups_view', $row['groups_view'], PDO::PARAM_STR, strlen( $row['groups_view'] ) );
 
 			$exc = $stmt->execute();
 			if( $exc )
@@ -203,6 +204,7 @@ else
 	$row['keywords'] = '';
 	$row['description'] = '';
 	$row['descriptionhtml'] = '';
+	$row['groups_view'] = 6;
 }
 
 // Fetch Limit
@@ -322,6 +324,18 @@ foreach( $array_cat_list as $rows_i )
 	$xtpl->assign( 'ptitle', $rows_i[1] );
 	$xtpl->assign( 'pselect', $sl );
 	$xtpl->parse( 'main.parent_loop' );
+}
+
+$groups_view = !empty( $row['groups_view'] ) ? explode( ',', $row['groups_view'] ) : array();
+foreach( $groups_list as $group_id => $grtl )
+{
+	$groups_views = array(
+		'value' => $group_id,
+		'checked' => in_array( $group_id, $groups_view ) ? ' checked="checked"' : '',
+		'title' => $grtl
+	);
+	$xtpl->assign( 'GROUPS_VIEW', $groups_views );
+	$xtpl->parse( 'main.groups_view' );
 }
 
 if( empty( $row['id'] ) )

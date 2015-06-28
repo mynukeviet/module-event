@@ -20,6 +20,7 @@ $lang_module['config'] = 'Cấu hình';
 $lang_module['save'] = 'Lưu lại';
 $lang_module['note'] = 'Ghi chú';
 $lang_module['keywords'] = 'Từ khóa';
+$lang_module['keywords_text'] = 'Nhập từ khóa....';
 $lang_module['description'] = 'Mô tả';
 $lang_module['descriptionhtml'] = 'Giới thiệu chi tiết';
 $lang_module['groups_view'] = 'Nhóm được xem';

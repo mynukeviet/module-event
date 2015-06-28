@@ -17,6 +17,7 @@ if ( $nv_Request->isset_request( 'get_alias_title', 'post' ) )
 	die( $alias );
 }
 
+$groups_list = nv_groups_list();
 $row = array();
 $error = array();
 $row['id'] = $nv_Request->get_int( 'id', 'post,get', 0 );
@@ -28,6 +29,11 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 	$row['catid'] = $nv_Request->get_int( 'catid', 'post', 0 );
 	$row['address'] = $nv_Request->get_title( 'address', 'post', '' );
 	$row['quantity'] = $nv_Request->get_int( 'quantity', 'post', 0 );
+	$row['keywords'] = $nv_Request->get_title( 'keywords', 'post', '' );
+
+	$_groups_view = $nv_Request->get_array( 'groups_view', 'post', array() );
+	$row['groups_view'] = !empty( $_groups_view ) ? implode( ',', nv_groups_post( array_intersect( $_groups_view, array_keys( $groups_list ) ) ) ) : '';
+
 	$row['image'] = $nv_Request->get_title( 'image', 'post', '' );
 	if( is_file( NV_DOCUMENT_ROOT . $row['image'] ) )
 	{
@@ -87,23 +93,20 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 		{
 			if( empty( $row['id'] ) )
 			{
-
-				$row['adduser'] = 0;
-				$row['add_time'] = 0;
+				$row['adduser'] = $admin_info['adminid'];
+				$row['add_time'] = NV_CURRENTTIME;
 				$row['edit_time'] = 0;
 
-				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . ' (title, alias, catid, adduser, address, quantity, image, hometext, bodytext, start_time, end_time, add_time, edit_time, status) VALUES (:title, :alias, :catid, :adduser, :address, :quantity, :image, :hometext, :bodytext, :start_time, :end_time, :add_time, :edit_time, :status)' );
+				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . ' (title, alias, catid, adduser, address, quantity, image, hometext, bodytext, start_time, end_time, add_time, edit_time, status) VALUES (:title, :alias, :catid, :adduser, :address, :quantity, :image, :hometext, :bodytext, :keywords, :groups_view, :start_time, :end_time, :add_time, :edit_time, :status)' );
 
 				$stmt->bindParam( ':adduser', $row['adduser'], PDO::PARAM_INT );
 				$stmt->bindParam( ':add_time', $row['add_time'], PDO::PARAM_INT );
 				$stmt->bindParam( ':edit_time', $row['edit_time'], PDO::PARAM_INT );
 				$stmt->bindValue( ':status', 1, PDO::PARAM_INT );
-
-
 			}
 			else
 			{
-				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . ' SET title = :title, alias = :alias, catid = :catid, address = :address, quantity = :quantity, image = :image, hometext = :hometext, bodytext = :bodytext, start_time = :start_time, end_time = :end_time WHERE id=' . $row['id'] );
+				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . ' SET title = :title, alias = :alias, catid = :catid, address = :address, quantity = :quantity, image = :image, hometext = :hometext, bodytext = :bodytext, keywords = :keywords, groups_view = :groups_view, start_time = :start_time, end_time = :end_time WHERE id=' . $row['id'] );
 			}
 			$stmt->bindParam( ':title', $row['title'], PDO::PARAM_STR );
 			$stmt->bindParam( ':alias', $row['alias'], PDO::PARAM_STR );
@@ -113,6 +116,8 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 			$stmt->bindParam( ':image', $row['image'], PDO::PARAM_STR );
 			$stmt->bindParam( ':hometext', $row['hometext'], PDO::PARAM_STR, strlen($row['hometext']) );
 			$stmt->bindParam( ':bodytext', $row['bodytext'], PDO::PARAM_STR, strlen($row['bodytext']) );
+			$stmt->bindParam( ':keywords', $row['keywords'], PDO::PARAM_STR, strlen($row['keywords']) );
+			$stmt->bindParam( ':groups_view', $row['groups_view'], PDO::PARAM_STR, strlen($row['groups_view']) );
 			$stmt->bindParam( ':start_time', $row['start_time'], PDO::PARAM_INT );
 			$stmt->bindParam( ':end_time', $row['end_time'], PDO::PARAM_INT );
 
@@ -148,6 +153,8 @@ else
 	$row['catid'] = 0;
 	$row['address'] = '';
 	$row['quantity'] = 0;
+	$row['keywords'] = '';
+	$row['groups_view'] = 6;
 	$row['image'] = '';
 	$row['hometext'] = '';
 	$row['bodytext'] = '';
@@ -181,7 +188,7 @@ if( defined( 'NV_EDITOR' ) ) require_once NV_ROOTDIR . '/' . NV_EDITORSDIR . '/'
 $row['bodytext'] = htmlspecialchars( nv_editor_br2nl( $row['bodytext'] ) );
 if( defined( 'NV_EDITOR' ) and nv_function_exists( 'nv_aleditor' ) )
 {
-	$row['bodytext'] = nv_aleditor( 'bodytext', '100%', '300px', $row['bodytext'] );
+	$row['bodytext'] = nv_aleditor( 'bodytext', '100%', '300px', $row['bodytext'], 'Basic' );
 }
 else
 {
@@ -209,6 +216,7 @@ $xtpl->assign( 'MODULE_NAME', $module_name );
 $xtpl->assign( 'MODULE_UPLOAD', $module_upload );
 $xtpl->assign( 'OP', $op );
 $xtpl->assign( 'ROW', $row );
+
 foreach( $array_catid_event as $value )
 {
 	$xtpl->assign( 'OPTION', array(
@@ -217,6 +225,18 @@ foreach( $array_catid_event as $value )
 		'selected' => ($value['id'] == $row['catid']) ? ' selected="selected"' : ''
 	) );
 	$xtpl->parse( 'main.select_catid' );
+}
+
+$groups_view = !empty( $row['groups_view'] ) ? explode( ',', $row['groups_view'] ) : array();
+foreach( $groups_list as $group_id => $grtl )
+{
+	$groups_views = array(
+		'value' => $group_id,
+		'checked' => in_array( $group_id, $groups_view ) ? ' checked="checked"' : '',
+		'title' => $grtl
+	);
+	$xtpl->assign( 'GROUPS_VIEW', $groups_views );
+	$xtpl->parse( 'main.groups_view' );
 }
 
 if( ! empty( $error ) )

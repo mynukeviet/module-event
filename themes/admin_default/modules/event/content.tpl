@@ -85,6 +85,12 @@
 		</div>
 		<div class="col-md-6">
 			<div class="panel panel-default">
+				<div class="panel-heading">{LANG.keywords}</div>
+				<div class="panel-body">
+					<textarea class="form-control" rows="3" name="keywords" placeholder="{LANG.keywords_text}">{ROW.keywords}</textarea>
+				</div>
+			</div>
+			<div class="panel panel-default">
 				<div class="panel-heading">{LANG.time}</div>
 				<div class="panel-body">
 					<div class="form-group">
@@ -105,6 +111,16 @@
 								</button> </span>
 						</div>
 					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">{LANG.groups_view}</div>
+				<div class="panel-body">
+					<!-- BEGIN: groups_view -->
+					<div class="row">
+						<label><input name="groups_view[]" type="checkbox" value="{GROUPS_VIEW.value}" {GROUPS_VIEW.checked} />{GROUPS_VIEW.title}</label>&nbsp;&nbsp;&nbsp;
+					</div>
+					<!-- END: groups_view -->
 				</div>
 			</div>
 		</div>

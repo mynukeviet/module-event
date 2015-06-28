@@ -5,7 +5,7 @@
  * @Author VINADES.,JSC (contact@vinades.vn)
  * @Copyright (C) 2015 VINADES.,JSC. All rights reserved
  * @License GNU/GPL version 2 or any later version
- * @Createdate Sun, 28 Jun 2015 02:16:47 GMT
+ * @Createdate Sun, 28 Jun 2015 02:44:49 GMT
  */
 
 if ( ! defined( 'NV_MAINFILE' ) ) die( 'Stop!!!' );
@@ -26,6 +26,8 @@ $sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_
   image varchar(255) NOT NULL COMMENT 'Hình ảnh sự kiện',
   hometext text NOT NULL COMMENT 'Giới thiệu ngắn gọn',
   bodytext text NOT NULL COMMENT 'Chi tiết sự kiện',
+  keywords text NOT NULL,
+  groups_view varchar(255) NOT NULL,
   start_time int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Thời gian bắt đầu',
   end_time int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Thời gian kết thúc',
   add_time int(11) unsigned NOT NULL DEFAULT '0',

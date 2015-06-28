@@ -6,7 +6,7 @@
 		</div>
 		<div class="col-xs-24 col-sm-16">
 			<ul>
-				<li><h2><a href="{DATA.url_event}" title="{DATA.title}">{DATA.title}</a></h2></li>
+				<li><h2>{DATA.title}</h2></li>
 				<li><em class="fa fa-archive">&nbsp;</em><a href="{DATA.url_cat}" title="{DATA.title_cat}">{DATA.title_cat}</a></li>
 				<!-- BEGIN: day -->
 				<li><em class="fa fa-clock-o">&nbsp;</em>{LANG.from} {DATA.start_time} {LANG.to} {DATA.end_time} {LANG.day} {DATA.start_date}</li>

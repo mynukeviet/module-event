@@ -251,7 +251,7 @@ else
 }
 
 $array_catid_event = array();
-$_sql = 'SELECT id,title FROM nv4_vi_event_cat';
+$_sql = 'SELECT id,title FROM ' . NV_PREFIXLANG . '_' . $module_data . '_cat';
 $_query = $db->query( $_sql );
 while( $_row = $_query->fetch() )
 {

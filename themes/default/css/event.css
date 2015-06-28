@@ -11,10 +11,10 @@
 	font-weight: bold
 }
 
-#event ul{
+#event_detail ul{
 	padding: 0
 }
 
-#event ul li{
+#event_detail ul li{
 	line-height: 25px
 }

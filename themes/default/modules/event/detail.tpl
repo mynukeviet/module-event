@@ -1,5 +1,5 @@
 <!-- BEGIN: main -->
-<div id="event">
+<div id="event_detail">
 	<div class="row">
 		<div class="col-xs-24 col-sm-8">
 			<img src="{DATA.homeimgfile}" class="img-thumbnail" />

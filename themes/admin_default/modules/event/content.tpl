@@ -1,4 +1,5 @@
 <!-- BEGIN: main -->
+<link href="{NV_BASE_SITEURL}modules/{MODULE_FILE}/js/bootstrap-datetimepicker/bootstrap-timepicker.css" type="text/css" rel="stylesheet" />
 <link type="text/css" href="{NV_BASE_SITEURL}js/ui/jquery.ui.core.css" rel="stylesheet" />
 <link type="text/css" href="{NV_BASE_SITEURL}js/ui/jquery.ui.theme.css" rel="stylesheet" />
 <link type="text/css" href="{NV_BASE_SITEURL}js/ui/jquery.ui.menu.css" rel="stylesheet" />
@@ -85,40 +86,75 @@
 		</div>
 		<div class="col-md-6">
 			<div class="panel panel-default">
-				<div class="panel-heading">{LANG.keywords}</div>
+				<div class="panel-heading">
+					{LANG.keywords}
+				</div>
 				<div class="panel-body">
 					<textarea class="form-control" rows="3" name="keywords" placeholder="{LANG.keywords_text}">{ROW.keywords}</textarea>
 				</div>
 			</div>
 			<div class="panel panel-default">
-				<div class="panel-heading">{LANG.time}</div>
+				<div class="panel-heading">
+					{LANG.time}
+				</div>
 				<div class="panel-body">
-					<div class="form-group">
-						<div class="input-group">
-							<input type="text" class="form-control" name="start_time" id="start_time" value="{ROW.start_time}" readonly="readonly" placeholder="{LANG.start_time}">
-							<span class="input-group-btn">
-								<button class="btn btn-default" type="button" id="start_time-btn">
-									<em class="fa fa-calendar fa-fix">&nbsp;</em>
-								</button> </span>
+					<div class="row">
+						<div class="col-sm-24 col-md-14">
+							<div class="form-group">
+								<div class="input-group">
+									<input type="text" class="form-control input-sm" name="start_date" id="start_date" value="{ROW.start_date}" readonly="readonly" placeholder="{LANG.start_time}">
+									<span class="input-group-btn">
+										<button class="btn btn-default btn-sm" type="button" id="start_date-btn">
+											<em class="fa fa-calendar fa-fix">&nbsp;</em>
+										</button> </span>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-24 col-md-10">
+							<div class="input-group">
+								<input type="text" class="form-control input-sm" name="start_time" id="start_time" value="{ROW.start_time}">
+								<span class="input-group-btn">
+									<button class="btn btn-default btn-sm" type="button">
+										<em class="fa fa-clock-o fa-fix">&nbsp;</em>
+									</button> </span>
+							</div>
 						</div>
 					</div>
-					<div class="form-group">
-						<div class="input-group">
-							<input type="text" class="form-control" name="end_time" id="end_time" value="{ROW.end_time}" readonly="readonly" placeholder="{LANG.end_time}">
-							<span class="input-group-btn">
-								<button class="btn btn-default" type="button" id="end_time-btn">
-									<em class="fa fa-calendar fa-fix">&nbsp;</em>
-								</button> </span>
+
+					<div class="row">
+						<div class="col-sm-24 col-md-14">
+							<div class="form-group">
+								<div class="input-group">
+									<input type="text" class="form-control input-sm" name="end_date" id="end_date" value="{ROW.end_date}" readonly="readonly" placeholder="{LANG.end_time}">
+									<span class="input-group-btn">
+										<button class="btn btn-default btn-sm" type="button">
+											<em class="fa fa-calendar fa-fix">&nbsp;</em>
+										</button> </span>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-24 col-md-10">
+							<div class="input-group">
+								<input type="text" class="form-control input-sm" name="end_time" id="end_time" value="{ROW.end_time}">
+								<span class="input-group-btn">
+									<button class="btn btn-default btn-sm" type="button">
+										<em class="fa fa-clock-o fa-fix">&nbsp;</em>
+									</button> </span>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="panel panel-default">
-				<div class="panel-heading">{LANG.groups_view}</div>
+				<div class="panel-heading">
+					{LANG.groups_view}
+				</div>
 				<div class="panel-body">
 					<!-- BEGIN: groups_view -->
 					<div class="row">
-						<label><input name="groups_view[]" type="checkbox" value="{GROUPS_VIEW.value}" {GROUPS_VIEW.checked} />{GROUPS_VIEW.title}</label>&nbsp;&nbsp;&nbsp;
+						<label>
+							<input name="groups_view[]" type="checkbox" value="{GROUPS_VIEW.value}" {GROUPS_VIEW.checked} />
+							{GROUPS_VIEW.title}</label>&nbsp;&nbsp;&nbsp;
 					</div>
 					<!-- END: groups_view -->
 				</div>
@@ -127,6 +163,7 @@
 	</div>
 </form>
 
+<script type="text/javascript" src="{NV_BASE_SITEURL}modules/{MODULE_FILE}/js/bootstrap-datetimepicker/bootstrap-timepicker.js"></script>
 <script type="text/javascript" src="{NV_BASE_SITEURL}js/ui/jquery.ui.core.min.js"></script>
 <script type="text/javascript" src="{NV_BASE_SITEURL}js/ui/jquery.ui.menu.min.js"></script>
 <script type="text/javascript" src="{NV_BASE_SITEURL}js/ui/jquery.ui.datepicker.min.js"></script>
@@ -145,18 +182,23 @@
 	}
 
 	$(function() {
-		$("#start_time, #end_time").datepicker({
+		$("#start_date, #end_date").datepicker({
 			dateFormat : "dd/mm/yy",
 			changeMonth : true,
 			changeYear : true,
 			showOtherMonths : true,
 			showOn : 'focus'
 		});
-		$('#start_time-btn').click(function(){
-			$("#start_time").datepicker('show');
+		$('#start_date-btn').click(function() {
+			$("#start_date").datepicker('show');
 		});
-		$('#end_time-btn').click(function(){
-			$("#end_time").datepicker('show');
+		$('#end_date-btn').click(function() {
+			$("#end_date").datepicker('show');
+		});
+
+		$('#start_time, #end_time').timepicker({
+			showMeridian : false,
+			minuteStep: 1
 		});
 	});
 

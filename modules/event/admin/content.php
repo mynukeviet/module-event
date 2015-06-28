@@ -24,12 +24,30 @@ $row['id'] = $nv_Request->get_int( 'id', 'post,get', 0 );
 if ( $nv_Request->isset_request( 'submit', 'post' ) )
 {
 	$row['title'] = $nv_Request->get_title( 'title', 'post', '' );
-	$row['alias'] = $nv_Request->get_title( 'alias', 'post', '' );
-	$row['alias'] = ( empty($row['alias'] ))? change_alias( $row['title'] ) : change_alias( $row['alias'] );
 	$row['catid'] = $nv_Request->get_int( 'catid', 'post', 0 );
 	$row['address'] = $nv_Request->get_title( 'address', 'post', '' );
 	$row['quantity'] = $nv_Request->get_int( 'quantity', 'post', 0 );
 	$row['keywords'] = $nv_Request->get_title( 'keywords', 'post', '' );
+
+	$row['alias'] = $nv_Request->get_title( 'alias', 'post', '' );
+	$row['alias'] = ( empty($row['alias'] ))? change_alias( $row['title'] ) : change_alias( $row['alias'] );
+
+	if( !empty( $row['alias'] ) )
+	{
+		$stmt = $db->prepare( 'SELECT COUNT(*) FROM ' . NV_PREFIXLANG . '_' . $module_data . ' WHERE id !=' . $row['id'] . ' AND alias = :alias' );
+		$stmt->bindParam( ':alias', $row['alias'], PDO::PARAM_STR );
+		$stmt->execute();
+		if( $stmt->fetchColumn() )
+		{
+			$rows_id = $row['id'];
+			if( $rows_id == 0 )
+			{
+				$rows_id = $db->query( 'SELECT MAX(id) FROM ' . NV_PREFIXLANG . '_' . $module_data )->fetchColumn();
+				$rows_id = intval( $rows_id ) + 1;
+			}
+			$row['alias'] = $row['alias'] . '-' . $rows_id;
+		}
+	}
 
 	$_groups_view = $nv_Request->get_array( 'groups_view', 'post', array() );
 	$row['groups_view'] = !empty( $_groups_view ) ? implode( ',', nv_groups_post( array_intersect( $_groups_view, array_keys( $groups_list ) ) ) ) : '';
@@ -45,20 +63,31 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 	}
 	$row['hometext'] = $nv_Request->get_string( 'hometext', 'post', '' );
 	$row['bodytext'] = $nv_Request->get_editor( 'bodytext', '', NV_ALLOWED_HTML_TAGS );
-	if( preg_match( '/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $nv_Request->get_string( 'start_time', 'post' ), $m ) )
+
+	if( preg_match( '/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $nv_Request->get_string( 'start_date', 'post' ), $m ) )
 	{
 		$_hour = 0;
 		$_min = 0;
+		if( preg_match( '/^([0-9]{1,2})\:([0-9]{1,2})$/', $nv_Request->get_string( 'start_time', 'post' ), $u ) )
+		{
+			$_hour = $u[1];
+			$_min = $u[2];
+		}
 		$row['start_time'] = mktime( $_hour, $_min, 0, $m[2], $m[1], $m[3] );
 	}
 	else
 	{
 		$row['start_time'] = 0;
 	}
-	if( preg_match( '/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $nv_Request->get_string( 'end_time', 'post' ), $m ) )
+	if( preg_match( '/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $nv_Request->get_string( 'end_date', 'post' ), $m ) )
 	{
 		$_hour = 0;
 		$_min = 0;
+		if( preg_match( '/^([0-9]{1,2})\:([0-9]{1,2})$/', $nv_Request->get_string( 'end_time', 'post' ), $u ) )
+		{
+			$_hour = $u[1];
+			$_min = $u[2];
+		}
 		$row['end_time'] = mktime( $_hour, $_min, 0, $m[2], $m[1], $m[3] );
 	}
 	else
@@ -93,11 +122,11 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 		{
 			if( empty( $row['id'] ) )
 			{
-				$row['adduser'] = $admin_info['adminid'];
+				$row['adduser'] = $admin_info['admin_id'];
 				$row['add_time'] = NV_CURRENTTIME;
 				$row['edit_time'] = 0;
 
-				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . ' (title, alias, catid, adduser, address, quantity, image, hometext, bodytext, start_time, end_time, add_time, edit_time, status) VALUES (:title, :alias, :catid, :adduser, :address, :quantity, :image, :hometext, :bodytext, :keywords, :groups_view, :start_time, :end_time, :add_time, :edit_time, :status)' );
+				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . ' (title, alias, catid, adduser, address, quantity, image, hometext, bodytext, keywords, groups_view, start_time, end_time, add_time, edit_time, status) VALUES (:title, :alias, :catid, :adduser, :address, :quantity, :image, :hometext, :bodytext, :keywords, :groups_view, :start_time, :end_time, :add_time, :edit_time, :status)' );
 
 				$stmt->bindParam( ':adduser', $row['adduser'], PDO::PARAM_INT );
 				$stmt->bindParam( ':add_time', $row['add_time'], PDO::PARAM_INT );
@@ -164,21 +193,26 @@ else
 
 if( empty( $row['start_time'] ) )
 {
-	$row['start_time'] = '';
+	$row['start_date'] = nv_date( 'd/m/Y', NV_CURRENTTIME );
+	$row['start_time'] = '00:00';
 }
 else
 {
-	$row['start_time'] = date( 'd/m/Y', $row['start_time'] );
+	$row['start_date'] = date( 'd/m/Y', $row['start_time'] );
+	$row['start_time'] = date( 'H:i', $row['start_time'] );
 }
 
 if( empty( $row['end_time'] ) )
 {
-	$row['end_time'] = '';
+	$row['end_date'] = '';
+	$row['end_time'] = '23:59';
 }
 else
 {
-	$row['end_time'] = date( 'd/m/Y', $row['end_time'] );
+	$row['end_date'] = date( 'd/m/Y', $row['end_time'] );
+	$row['end_time'] = date( 'H:i', $row['end_time'] );
 }
+
 if( ! empty( $row['image'] ) and is_file( NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $row['image'] ) )
 {
 	$row['image'] = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $row['image'];
@@ -213,6 +247,7 @@ $xtpl->assign( 'NV_BASE_ADMINURL', NV_BASE_ADMINURL );
 $xtpl->assign( 'NV_NAME_VARIABLE', NV_NAME_VARIABLE );
 $xtpl->assign( 'NV_OP_VARIABLE', NV_OP_VARIABLE );
 $xtpl->assign( 'MODULE_NAME', $module_name );
+$xtpl->assign( 'MODULE_FILE', $module_file );
 $xtpl->assign( 'MODULE_UPLOAD', $module_upload );
 $xtpl->assign( 'OP', $op );
 $xtpl->assign( 'ROW', $row );

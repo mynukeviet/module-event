@@ -50,6 +50,7 @@ $lang_module['catid_c'] = 'Chọn chủ đề';
 $lang_module['address'] = 'Địa điểm diễn ra';
 $lang_module['quantity'] = 'Số lượng tham gia';
 $lang_module['image'] = 'Hình ảnh sự kự kiện';
+$lang_module['imagealt'] = 'Mô tả ảnh';
 $lang_module['image_c'] = 'Chọn ảnh';
 $lang_module['hometext'] = 'Giới thiệu ngắn gọn';
 $lang_module['bodytext'] = 'Chi tiết sự kiện';

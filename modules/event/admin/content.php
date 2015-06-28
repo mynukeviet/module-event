@@ -52,15 +52,32 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 	$_groups_view = $nv_Request->get_array( 'groups_view', 'post', array() );
 	$row['groups_view'] = !empty( $_groups_view ) ? implode( ',', nv_groups_post( array_intersect( $_groups_view, array_keys( $groups_list ) ) ) ) : '';
 
-	$row['image'] = $nv_Request->get_title( 'image', 'post', '' );
-	if( is_file( NV_DOCUMENT_ROOT . $row['image'] ) )
+	// Xu ly anh minh hoa
+	$row['homeimgfile'] = $nv_Request->get_title( 'homeimg', 'post', '' );
+	$row['homeimgalt'] = $nv_Request->get_title( 'homeimgalt', 'post', '', 1 );
+	$row['homeimgthumb'] = 0;
+	if( ! nv_is_url( $row['homeimgfile'] ) and is_file( NV_DOCUMENT_ROOT . $row['homeimgfile'] ) )
 	{
-		$row['image'] = substr( $row['image'], strlen( NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' ) );
+		$lu = strlen( NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' );
+		$row['homeimgfile'] = substr( $row['homeimgfile'], $lu );
+		if( file_exists( NV_ROOTDIR . '/' . NV_FILES_DIR . '/' . $module_upload . '/' . $row['homeimgfile'] ) )
+		{
+			$row['homeimgthumb'] = 1;
+		}
+		else
+		{
+			$row['homeimgthumb'] = 2;
+		}
+	}
+	elseif( nv_is_url( $row['homeimgfile'] ) )
+	{
+		$row['homeimgthumb'] = 3;
 	}
 	else
 	{
-		$row['image'] = '';
+		$row['homeimgfile'] = '';
 	}
+
 	$row['hometext'] = $nv_Request->get_string( 'hometext', 'post', '' );
 	$row['bodytext'] = $nv_Request->get_editor( 'bodytext', '', NV_ALLOWED_HTML_TAGS );
 
@@ -126,7 +143,7 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 				$row['add_time'] = NV_CURRENTTIME;
 				$row['edit_time'] = 0;
 
-				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . ' (title, alias, catid, adduser, address, quantity, image, hometext, bodytext, keywords, groups_view, start_time, end_time, add_time, edit_time, status) VALUES (:title, :alias, :catid, :adduser, :address, :quantity, :image, :hometext, :bodytext, :keywords, :groups_view, :start_time, :end_time, :add_time, :edit_time, :status)' );
+				$stmt = $db->prepare( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . ' (title, alias, catid, adduser, address, quantity, homeimgfile, homeimgalt, homeimgthumb, hometext, bodytext, keywords, groups_view, start_time, end_time, add_time, edit_time, status) VALUES (:title, :alias, :catid, :adduser, :address, :quantity, :homeimgfile, :homeimgalt, :homeimgthumb, :hometext, :bodytext, :keywords, :groups_view, :start_time, :end_time, :add_time, :edit_time, :status)' );
 
 				$stmt->bindParam( ':adduser', $row['adduser'], PDO::PARAM_INT );
 				$stmt->bindParam( ':add_time', $row['add_time'], PDO::PARAM_INT );
@@ -135,14 +152,16 @@ if ( $nv_Request->isset_request( 'submit', 'post' ) )
 			}
 			else
 			{
-				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . ' SET title = :title, alias = :alias, catid = :catid, address = :address, quantity = :quantity, image = :image, hometext = :hometext, bodytext = :bodytext, keywords = :keywords, groups_view = :groups_view, start_time = :start_time, end_time = :end_time WHERE id=' . $row['id'] );
+				$stmt = $db->prepare( 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . ' SET title = :title, alias = :alias, catid = :catid, address = :address, quantity = :quantity, homeimgfile = :homeimgfile, homeimgalt = :homeimgalt, homeimgthumb = :homeimgthumb, hometext = :hometext, bodytext = :bodytext, keywords = :keywords, groups_view = :groups_view, start_time = :start_time, end_time = :end_time WHERE id=' . $row['id'] );
 			}
 			$stmt->bindParam( ':title', $row['title'], PDO::PARAM_STR );
 			$stmt->bindParam( ':alias', $row['alias'], PDO::PARAM_STR );
 			$stmt->bindParam( ':catid', $row['catid'], PDO::PARAM_INT );
 			$stmt->bindParam( ':address', $row['address'], PDO::PARAM_STR );
 			$stmt->bindParam( ':quantity', $row['quantity'], PDO::PARAM_INT );
-			$stmt->bindParam( ':image', $row['image'], PDO::PARAM_STR );
+			$stmt->bindParam( ':homeimgfile', $row['homeimgfile'], PDO::PARAM_STR );
+			$stmt->bindParam( ':homeimgalt', $row['homeimgalt'], PDO::PARAM_STR );
+			$stmt->bindParam( ':homeimgthumb', $row['homeimgthumb'], PDO::PARAM_INT );
 			$stmt->bindParam( ':hometext', $row['hometext'], PDO::PARAM_STR, strlen($row['hometext']) );
 			$stmt->bindParam( ':bodytext', $row['bodytext'], PDO::PARAM_STR, strlen($row['bodytext']) );
 			$stmt->bindParam( ':keywords', $row['keywords'], PDO::PARAM_STR, strlen($row['keywords']) );
@@ -184,7 +203,9 @@ else
 	$row['quantity'] = 0;
 	$row['keywords'] = '';
 	$row['groups_view'] = 6;
-	$row['image'] = '';
+	$row['homeimgfile'] = '';
+	$row['homeimgalt'] = '';
+	$row['homeimgthumb'] = '';
 	$row['hometext'] = '';
 	$row['bodytext'] = '';
 	$row['start_time'] = 0;
@@ -238,6 +259,10 @@ while( $_row = $_query->fetch() )
 }
 
 $row['quantity'] = !empty( $row['quantity'] ) ? $row['quantity'] : '';
+if( ! empty( $row['homeimgfile'] ) and file_exists( NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $row['homeimgfile'] ) )
+{
+	$row['homeimgfile'] = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $row['homeimgfile'];
+}
 
 $xtpl = new XTemplate( $op . '.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file );
 $xtpl->assign( 'LANG', $lang_module );

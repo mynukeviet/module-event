@@ -46,12 +46,18 @@
 					<div class="form-group">
 						<label class="col-sm-4 control-label"><strong>{LANG.image}</strong></label>
 						<div class="col-sm-16">
-							<input class="form-control" type="text" name="image" value="{ROW.image}" id="id_image" />
+							<input class="form-control" type="text" name="homeimg" value="{ROW.homeimgfile}" id="id_image" />
 						</div>
 						<div class="col-sm-4">
 							<button type="button" class="btn btn-info" id="img_image">
 								<i class="fa fa-folder-open-o">&nbsp;</i> {LANG.image_c}
 							</button>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><strong>{LANG.imagealt}</strong></label>
+						<div class="col-sm-20">
+							<input class="form-control" type="text" name="homeimgalt" value="{ROW.homeimgalt}" />
 						</div>
 					</div>
 					<div class="form-group">
